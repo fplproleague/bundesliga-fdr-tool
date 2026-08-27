@@ -1,9 +1,33 @@
-import { useState } from 'react';
-import { RotateCcw, SlidersHorizontal, Table2 } from 'lucide-react';
-import { TEAMS, DEFAULT_RATINGS, FIXTURES, RATING_STYLE, GW_INDEXES, getFixtureInfo } from './constants';
+import { useMemo, useState } from 'react';
+import { ArrowUpDown, RotateCcw, SlidersHorizontal, Table2 } from 'lucide-react';
+import {
+  TEAMS,
+  DEFAULT_RATINGS,
+  FIXTURES,
+  RATING_STYLE,
+  GW_INDEXES,
+  getFixtureInfo,
+  getTeamAvgDifficulty,
+} from './constants';
+
+function ClubLogo({ code, size = 18 }) {
+  return (
+    <img
+      src={`/club-logos/${code}.svg`}
+      alt=""
+      width={size}
+      height={size}
+      className="club-logo"
+      onError={e => {
+        e.target.style.display = 'none';
+      }}
+    />
+  );
+}
 
 export default function App() {
   const [ratings, setRatings] = useState(DEFAULT_RATINGS);
+  const [sortEasiest, setSortEasiest] = useState(false);
 
   const updateRating = (code, value) => {
     setRatings(prev => ({ ...prev, [code]: value }));
@@ -12,6 +36,13 @@ export default function App() {
   const resetRatings = () => setRatings(DEFAULT_RATINGS);
 
   const isCustom = TEAMS.some(t => ratings[t.code] !== DEFAULT_RATINGS[t.code]);
+
+  const displayedTeams = useMemo(() => {
+    if (!sortEasiest) return TEAMS;
+    return [...TEAMS].sort(
+      (a, b) => getTeamAvgDifficulty(a.code, ratings) - getTeamAvgDifficulty(b.code, ratings)
+    );
+  }, [sortEasiest, ratings]);
 
   return (
     <div className="app">
@@ -25,7 +56,7 @@ export default function App() {
           <div className="panel-header">
             <h2 className="panel-title">
               <SlidersHorizontal size={18} aria-hidden="true" />
-              Teamsterkte
+              Team Strength
             </h2>
             {isCustom && (
               <button type="button" className="reset-btn" onClick={resetRatings}>
@@ -41,7 +72,10 @@ export default function App() {
               return (
                 <div className="strength-card" key={team.code}>
                   <div className="strength-card-top">
-                    <span className="team-code">{team.code}</span>
+                    <span className="team-label">
+                      <ClubLogo code={team.code} />
+                      <span className="team-code">{team.code}</span>
+                    </span>
                     <span className="rating-badge" style={{ background: style.bg, color: style.text }}>
                       {rating}
                     </span>
@@ -54,7 +88,7 @@ export default function App() {
                     step={1}
                     value={rating}
                     onChange={e => updateRating(team.code, Number(e.target.value))}
-                    aria-label={`Sterkte van ${team.name}`}
+                    aria-label={`Strength of ${team.name}`}
                     className="strength-slider"
                   />
                 </div>
@@ -67,8 +101,17 @@ export default function App() {
           <div className="panel-header">
             <h2 className="panel-title">
               <Table2 size={18} aria-hidden="true" />
-              FDR Tabel
+              FDR Table
             </h2>
+            <button
+              type="button"
+              className="reset-btn"
+              onClick={() => setSortEasiest(s => !s)}
+              aria-pressed={sortEasiest}
+            >
+              <ArrowUpDown size={14} aria-hidden="true" />
+              {sortEasiest ? 'Sorted: Easiest first' : 'Sort easiest first'}
+            </button>
           </div>
           <div className="fdr-table-scroll">
             <table className="fdr-table">
@@ -81,9 +124,14 @@ export default function App() {
                 </tr>
               </thead>
               <tbody>
-                {TEAMS.map(team => (
+                {displayedTeams.map(team => (
                   <tr key={team.code}>
-                    <td className="fdr-team-cell">{team.code}</td>
+                    <td className="fdr-team-cell">
+                      <span className="team-label">
+                        <ClubLogo code={team.code} />
+                        <span className="team-code">{team.code}</span>
+                      </span>
+                    </td>
                     {FIXTURES[team.code].map((fixture, i) => {
                       const { opp, venue, style } = getFixtureInfo(fixture, ratings);
                       return (

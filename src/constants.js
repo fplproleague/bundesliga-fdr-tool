@@ -1,5 +1,5 @@
-// Teams en fixtures voor de Bundesliga FDR-tool. Elke fixture-entry is een "OPP-VENUE"-string
-// (tegenstander-code + H/A vanuit het perspectief van de rij-team).
+// Teams and fixtures for the Bundesliga FDR tool. Each fixture entry is an "OPP-VENUE" string
+// (opponent code + H/A from the row team's perspective).
 
 export const TEAMS = [
   { code: 'FCB', name: 'Bayern München' },
@@ -54,13 +54,13 @@ export const FIXTURES = {
 export const GW_COUNT = 3;
 export const GW_INDEXES = Array.from({ length: GW_COUNT }, (_, i) => i);
 
-// Groen (makkelijk) t/m rood (moeilijk), zelfde 1-5-schaal als de sterkte-rating zelf.
+// Green (easy) through red (hard), same 1-5 scale as the strength rating itself.
 export const RATING_STYLE = {
-  1: { bg: '#3F9142', text: '#F2FBF2', label: 'Makkelijkst' },
-  2: { bg: '#8BB84A', text: '#12280A', label: 'Makkelijk' },
-  3: { bg: '#E0B93C', text: '#332400', label: 'Gemiddeld' },
-  4: { bg: '#DD7C31', text: '#2E1400', label: 'Moeilijk' },
-  5: { bg: '#C8102E', text: '#FFFFFF', label: 'Moeilijkst' },
+  1: { bg: '#3F9142', text: '#F2FBF2', label: 'Easiest' },
+  2: { bg: '#8BB84A', text: '#12280A', label: 'Easy' },
+  3: { bg: '#E0B93C', text: '#332400', label: 'Average' },
+  4: { bg: '#DD7C31', text: '#2E1400', label: 'Hard' },
+  5: { bg: '#C8102E', text: '#FFFFFF', label: 'Hardest' },
 };
 
 export function getTeamName(code) {
@@ -71,4 +71,10 @@ export function getFixtureInfo(fixture, ratings) {
   const [opp, venue] = fixture.split('-');
   const rating = ratings[opp] ?? 3;
   return { opp, venue, style: RATING_STYLE[rating], rating };
+}
+
+export function getTeamAvgDifficulty(teamCode, ratings) {
+  const fixtures = FIXTURES[teamCode];
+  const total = fixtures.reduce((sum, f) => sum + getFixtureInfo(f, ratings).rating, 0);
+  return total / fixtures.length;
 }

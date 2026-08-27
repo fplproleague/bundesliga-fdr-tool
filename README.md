@@ -1,9 +1,9 @@
 # Bundesliga FDR
 
-Fixture Difficulty Rating tool voor de Duitse Bundesliga. Stel de sterkte van elk team in (1-5)
-en bekijk meteen hoe dat de moeilijkheidsgraad van elk team z'n komende wedstrijden kleurt.
+Fixture Difficulty Rating tool for the German Bundesliga. Set each team's strength (1-5) and
+instantly see how that colors the difficulty of every team's upcoming fixtures.
 
-## Ontwikkelen
+## Develop
 
 ```bash
 npm install
@@ -16,4 +16,4 @@ npm run dev
 npm run build
 ```
 
-Klaar om te hosten op Vercel (`vercel.json` bevat een SPA-rewrite naar `index.html`).
+Ready to host on Vercel (`vercel.json` includes an SPA rewrite to `index.html`).
