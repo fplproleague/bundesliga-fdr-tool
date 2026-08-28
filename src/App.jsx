@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ArrowUpDown, RotateCcw, SlidersHorizontal, Table2 } from 'lucide-react';
 import {
   TEAMS,
@@ -9,6 +9,18 @@ import {
   getFixtureInfo,
   getTeamAvgDifficulty,
 } from './constants';
+
+const RATINGS_STORAGE_KEY = 'bundesliga-fdr-ratings';
+
+function loadStoredRatings() {
+  try {
+    const raw = localStorage.getItem(RATINGS_STORAGE_KEY);
+    if (!raw) return DEFAULT_RATINGS;
+    return { ...DEFAULT_RATINGS, ...JSON.parse(raw) };
+  } catch {
+    return DEFAULT_RATINGS;
+  }
+}
 
 function ClubLogo({ code, size = 18 }) {
   return (
@@ -26,8 +38,16 @@ function ClubLogo({ code, size = 18 }) {
 }
 
 export default function App() {
-  const [ratings, setRatings] = useState(DEFAULT_RATINGS);
+  const [ratings, setRatings] = useState(loadStoredRatings);
   const [sortEasiest, setSortEasiest] = useState(false);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(RATINGS_STORAGE_KEY, JSON.stringify(ratings));
+    } catch {
+      // Private browsing / storage disabled — ratings just won't persist across reloads.
+    }
+  }, [ratings]);
 
   const updateRating = (code, value) => {
     setRatings(prev => ({ ...prev, [code]: value }));

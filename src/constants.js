@@ -41,7 +41,7 @@ export const FIXTURES = {
   TSG: ['KOE-A', 'BVB-H', 'VFB-H', 'SCP-A', 'HSV-H', 'BMG-A', 'B04-H', 'SVW-A'],
   FCU: ['SGE-H', 'B04-A', 'S04-H', 'FCB-A', 'ELV-H', 'BVB-H', 'FCA-A', 'KOE-H'],
   // RBL's GW5 entry says "Frankfurt (A)" — SGE's own GW5 entry also said away, which can't both be
-  // true. Resolved here in SGE's favour of home, matching what RBL lists for that fixture.
+  // true. Resolved here in RBL's favour of home, so SGE is away.
   SGE: ['FCU-A', 'FCA-H', 'M05-A', 'SCF-H', 'RBL-A', 'KOE-H', 'BVB-A', 'HSV-H'],
   ELV: ['B04-H', 'BMG-A', 'FCB-H', 'S04-A', 'FCU-A', 'FCA-H', 'RBL-A', 'M05-H'],
   B04: ['ELV-A', 'FCU-H', 'FCA-A', 'RBL-H', 'M05-A', 'SCF-H', 'TSG-A', 'VFB-H'],

@@ -220,12 +220,17 @@ body {
   text-align: left !important;
   position: sticky;
   left: 0;
+  z-index: 2;
   background: var(--bg-panel);
+  /* Forces its own compositor layer, same reason as .fdr-team-cell below. */
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .fdr-team-cell {
   position: sticky;
   left: 0;
+  z-index: 1;
   background: var(--bg-panel);
   color: var(--white);
   font-weight: 700;
@@ -233,6 +238,10 @@ body {
   padding: 8px;
   white-space: nowrap;
   box-shadow: 4px 0 0 0 var(--bg-panel);
+  /* Without its own compositor layer, mobile Safari can paint the scrolling fixture cells a frame
+     ahead of this sticky one during momentum scroll, showing their text over it. */
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .fdr-cell {
