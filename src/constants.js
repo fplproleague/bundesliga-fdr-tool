@@ -33,7 +33,7 @@ export const DEFAULT_RATINGS = {
 export const FIXTURES = {
   FCB: ['VFB-H', 'S04-A', 'ELV-A', 'FCU-H', 'FCA-A', 'RBL-H', 'SCF-A', 'BVB-A'],
   VFB: ['FCB-A', 'KOE-H', 'TSG-A', 'BVB-H', 'SCP-A', 'HSV-A', 'BMG-H', 'B04-A'],
-  RBL: ['BMG-H', 'SVW-A', 'HSV-H', 'B04-A', 'SGE-A', 'FCB-A', 'ELV-H', 'S04-A'],
+  RBL: ['BMG-H', 'SVW-A', 'HSV-H', 'B04-A', 'SGE-H', 'FCB-A', 'ELV-H', 'S04-A'],
   BMG: ['RBL-A', 'ELV-H', 'SCF-A', 'M05-H', 'KOE-A', 'TSG-H', 'VFB-A', 'SCP-H'],
   M05: ['SCP-H', 'HSV-A', 'SGE-H', 'BMG-A', 'B04-H', 'S04-A', 'SVW-H', 'ELV-A'],
   SCP: ['M05-A', 'SCF-H', 'BVB-A', 'TSG-H', 'VFB-H', 'SVW-A', 'HSV-H', 'BMG-A'],
@@ -42,7 +42,7 @@ export const FIXTURES = {
   FCU: ['SGE-H', 'B04-A', 'S04-H', 'FCB-A', 'ELV-H', 'BVB-H', 'FCA-A', 'KOE-H'],
   // RBL's GW5 entry says "Frankfurt (A)" — SGE's own GW5 entry also said away, which can't both be
   // true. Resolved here in SGE's favour of home, matching what RBL lists for that fixture.
-  SGE: ['FCU-A', 'FCA-H', 'M05-A', 'SCF-H', 'RBL-H', 'KOE-H', 'BVB-A', 'HSV-H'],
+  SGE: ['FCU-A', 'FCA-H', 'M05-A', 'SCF-H', 'RBL-A', 'KOE-H', 'BVB-A', 'HSV-H'],
   ELV: ['B04-H', 'BMG-A', 'FCB-H', 'S04-A', 'FCU-A', 'FCA-H', 'RBL-A', 'M05-H'],
   B04: ['ELV-A', 'FCU-H', 'FCA-A', 'RBL-H', 'M05-A', 'SCF-H', 'TSG-A', 'VFB-H'],
   BVB: ['HSV-H', 'TSG-A', 'SCP-H', 'VFB-A', 'SVW-H', 'FCU-A', 'SGE-H', 'FCB-H'],
