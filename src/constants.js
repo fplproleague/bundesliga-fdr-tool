@@ -31,27 +31,31 @@ export const DEFAULT_RATINGS = {
 };
 
 export const FIXTURES = {
-  FCB: ['VFB-H', 'S04-A', 'ELV-A'],
-  VFB: ['FCB-A', 'KOE-H', 'TSG-A'],
-  RBL: ['BMG-H', 'SVW-A', 'HSV-H'],
-  BMG: ['RBL-A', 'ELV-H', 'SCF-A'],
-  M05: ['SCP-H', 'HSV-A', 'SGE-H'],
-  SCP: ['M05-A', 'SCF-H', 'BVB-A'],
-  KOE: ['TSG-H', 'VFB-A', 'SVW-H'],
-  TSG: ['KOE-A', 'BVB-H', 'VFB-H'],
-  FCU: ['SGE-H', 'B04-A', 'S04-H'],
-  SGE: ['FCU-A', 'FCA-H', 'M05-A'],
-  ELV: ['B04-H', 'BMG-A', 'FCB-H'],
-  B04: ['ELV-A', 'FCU-H', 'FCA-A'],
-  BVB: ['HSV-H', 'TSG-A', 'SCP-H'],
-  HSV: ['BVB-A', 'M05-H', 'RBL-A'],
-  SCF: ['SVW-H', 'SCP-A', 'BMG-H'],
-  SVW: ['SCF-A', 'RBL-H', 'KOE-A'],
-  FCA: ['S04-H', 'SGE-A', 'B04-H'],
-  S04: ['FCA-A', 'FCB-H', 'FCU-A'],
+  FCB: ['VFB-H', 'S04-A', 'ELV-A', 'FCU-H', 'FCA-A', 'RBL-H', 'SCF-A', 'BVB-A'],
+  VFB: ['FCB-A', 'KOE-H', 'TSG-A', 'BVB-H', 'SCP-A', 'HSV-A', 'BMG-H', 'B04-A'],
+  RBL: ['BMG-H', 'SVW-A', 'HSV-H', 'B04-A', 'SGE-A', 'FCB-A', 'ELV-H', 'S04-A'],
+  BMG: ['RBL-A', 'ELV-H', 'SCF-A', 'M05-H', 'KOE-A', 'TSG-H', 'VFB-A', 'SCP-H'],
+  M05: ['SCP-H', 'HSV-A', 'SGE-H', 'BMG-A', 'B04-H', 'S04-A', 'SVW-H', 'ELV-A'],
+  SCP: ['M05-A', 'SCF-H', 'BVB-A', 'TSG-H', 'VFB-H', 'SVW-A', 'HSV-H', 'BMG-A'],
+  KOE: ['TSG-H', 'VFB-A', 'SVW-H', 'HSV-A', 'BMG-H', 'SGE-A', 'S04-H', 'FCU-A'],
+  TSG: ['KOE-A', 'BVB-H', 'VFB-H', 'SCP-A', 'HSV-H', 'BMG-A', 'B04-H', 'SVW-A'],
+  FCU: ['SGE-H', 'B04-A', 'S04-H', 'FCB-A', 'ELV-H', 'BVB-H', 'FCA-A', 'KOE-H'],
+  // RBL's GW5 entry says "Frankfurt (A)" — SGE's own GW5 entry also said away, which can't both be
+  // true. Resolved here in SGE's favour of home, matching what RBL lists for that fixture.
+  SGE: ['FCU-A', 'FCA-H', 'M05-A', 'SCF-H', 'RBL-H', 'KOE-H', 'BVB-A', 'HSV-H'],
+  ELV: ['B04-H', 'BMG-A', 'FCB-H', 'S04-A', 'FCU-A', 'FCA-H', 'RBL-A', 'M05-H'],
+  B04: ['ELV-A', 'FCU-H', 'FCA-A', 'RBL-H', 'M05-A', 'SCF-H', 'TSG-A', 'VFB-H'],
+  BVB: ['HSV-H', 'TSG-A', 'SCP-H', 'VFB-A', 'SVW-H', 'FCU-A', 'SGE-H', 'FCB-H'],
+  HSV: ['BVB-A', 'M05-H', 'RBL-A', 'KOE-H', 'TSG-A', 'VFB-H', 'SCP-A', 'SGE-A'],
+  // Same conflict as SGE's GW5 above, but for GW7: FCB's own entry says "Freiburg (A)", so SCF is
+  // resolved to home here to match.
+  SCF: ['SVW-H', 'SCP-A', 'BMG-H', 'SGE-A', 'S04-H', 'B04-A', 'FCB-H', 'FCA-A'],
+  SVW: ['SCF-A', 'RBL-H', 'KOE-A', 'FCA-H', 'BVB-A', 'SCP-H', 'M05-A', 'TSG-H'],
+  FCA: ['S04-H', 'SGE-A', 'B04-H', 'SVW-A', 'FCB-H', 'ELV-A', 'FCU-H', 'SCF-H'],
+  S04: ['FCA-A', 'FCB-H', 'FCU-A', 'ELV-H', 'SCF-A', 'M05-H', 'KOE-A', 'RBL-H'],
 };
 
-export const GW_COUNT = 3;
+export const GW_COUNT = 8;
 export const GW_INDEXES = Array.from({ length: GW_COUNT }, (_, i) => i);
 
 // Green (easy) through red (hard), same 1-5 scale as the strength rating itself.
