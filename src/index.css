@@ -80,13 +80,19 @@ body {
   padding: 16px;
 }
 
-.panel-header {
+.panel-toggle {
   display: flex;
+  width: 100%;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px 12px;
-  margin-bottom: 14px;
+  gap: 12px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  font-family: inherit;
+  cursor: pointer;
 }
 
 .panel-title {
@@ -104,6 +110,28 @@ body {
 
 .panel-title svg {
   color: var(--red);
+}
+
+.chevron {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.chevron-open {
+  transform: rotate(180deg);
+}
+
+.panel-body {
+  margin-top: 14px;
+}
+
+.panel-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  margin-bottom: 14px;
 }
 
 .reset-btn {
@@ -124,13 +152,6 @@ body {
 .reset-btn:hover {
   border-color: var(--red);
   color: var(--white);
-}
-
-.table-controls {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px 12px;
 }
 
 .gw-range {
@@ -244,6 +265,11 @@ body {
 
 .fdr-team-header {
   text-align: left !important;
+  /* Table is width:100% with no explicit widths on the fixture columns, so with few GW columns
+     selected the browser's auto layout hands the surplus width to every column, including this
+     one, unless it's pinned to shrink-to-fit here — "width: 1%" is the standard trick for that. */
+  width: 1%;
+  white-space: nowrap;
   position: sticky;
   left: 0;
   z-index: 2;
@@ -254,6 +280,7 @@ body {
 }
 
 .fdr-team-cell {
+  width: 1%;
   position: sticky;
   left: 0;
   z-index: 1;
