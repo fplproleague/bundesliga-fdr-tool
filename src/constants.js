@@ -58,6 +58,10 @@ export const FIXTURES = {
 export const GW_COUNT = 8;
 export const GW_INDEXES = Array.from({ length: GW_COUNT }, (_, i) => i);
 
+// The gameweek in progress right now — GW1 has been played, so GW2 is next up. Update this by hand
+// once a gameweek's fixtures are done; it sets the table's default range (see App.jsx).
+export const CURRENT_GW = 2;
+
 // Green (easy) through red (hard), same 1-5 scale as the strength rating itself.
 export const RATING_STYLE = {
   1: { bg: '#3F9142', text: '#F2FBF2', label: 'Easiest' },
@@ -77,8 +81,8 @@ export function getFixtureInfo(fixture, ratings) {
   return { opp, venue, style: RATING_STYLE[rating], rating };
 }
 
-export function getTeamAvgDifficulty(teamCode, ratings) {
-  const fixtures = FIXTURES[teamCode];
+export function getTeamAvgDifficulty(teamCode, ratings, startGw = 1, endGw = GW_COUNT) {
+  const fixtures = FIXTURES[teamCode].slice(startGw - 1, endGw);
   const total = fixtures.reduce((sum, f) => sum + getFixtureInfo(f, ratings).rating, 0);
   return total / fixtures.length;
 }

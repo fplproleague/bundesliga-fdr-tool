@@ -5,10 +5,13 @@ import {
   DEFAULT_RATINGS,
   FIXTURES,
   RATING_STYLE,
-  GW_INDEXES,
+  GW_COUNT,
+  CURRENT_GW,
   getFixtureInfo,
   getTeamAvgDifficulty,
 } from './constants';
+
+const GW_NUMBERS = Array.from({ length: GW_COUNT }, (_, i) => i + 1);
 
 const RATINGS_STORAGE_KEY = 'bundesliga-fdr-ratings';
 
@@ -40,6 +43,23 @@ function ClubLogo({ code, size = 18 }) {
 export default function App() {
   const [ratings, setRatings] = useState(loadStoredRatings);
   const [sortEasiest, setSortEasiest] = useState(false);
+  const [gwStart, setGwStart] = useState(CURRENT_GW);
+  const [gwEnd, setGwEnd] = useState(GW_COUNT);
+
+  const changeGwStart = value => {
+    setGwStart(value);
+    setGwEnd(end => Math.max(end, value));
+  };
+
+  const changeGwEnd = value => {
+    setGwEnd(value);
+    setGwStart(start => Math.min(start, value));
+  };
+
+  const gwNumbers = useMemo(
+    () => GW_NUMBERS.filter(gw => gw >= gwStart && gw <= gwEnd),
+    [gwStart, gwEnd]
+  );
 
   useEffect(() => {
     try {
@@ -60,9 +80,11 @@ export default function App() {
   const displayedTeams = useMemo(() => {
     if (!sortEasiest) return TEAMS;
     return [...TEAMS].sort(
-      (a, b) => getTeamAvgDifficulty(a.code, ratings) - getTeamAvgDifficulty(b.code, ratings)
+      (a, b) =>
+        getTeamAvgDifficulty(a.code, ratings, gwStart, gwEnd) -
+        getTeamAvgDifficulty(b.code, ratings, gwStart, gwEnd)
     );
-  }, [sortEasiest, ratings]);
+  }, [sortEasiest, ratings, gwStart, gwEnd]);
 
   return (
     <div className="app">
@@ -123,23 +145,53 @@ export default function App() {
               <Table2 size={18} aria-hidden="true" />
               FDR Table
             </h2>
-            <button
-              type="button"
-              className="reset-btn"
-              onClick={() => setSortEasiest(s => !s)}
-              aria-pressed={sortEasiest}
-            >
-              <ArrowUpDown size={14} aria-hidden="true" />
-              {sortEasiest ? 'Sorted: Easiest first' : 'Sort easiest first'}
-            </button>
+            <div className="table-controls">
+              <div className="gw-range">
+                <label htmlFor="gw-start">GW</label>
+                <select
+                  id="gw-start"
+                  className="gw-select"
+                  value={gwStart}
+                  onChange={e => changeGwStart(Number(e.target.value))}
+                >
+                  {GW_NUMBERS.map(gw => (
+                    <option key={gw} value={gw}>
+                      {gw}
+                    </option>
+                  ))}
+                </select>
+                <span>to</span>
+                <select
+                  id="gw-end"
+                  className="gw-select"
+                  value={gwEnd}
+                  onChange={e => changeGwEnd(Number(e.target.value))}
+                >
+                  {GW_NUMBERS.map(gw => (
+                    <option key={gw} value={gw}>
+                      {gw}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button
+                type="button"
+                className="reset-btn"
+                onClick={() => setSortEasiest(s => !s)}
+                aria-pressed={sortEasiest}
+              >
+                <ArrowUpDown size={14} aria-hidden="true" />
+                {sortEasiest ? 'Sorted: Easiest first' : 'Sort easiest first'}
+              </button>
+            </div>
           </div>
           <div className="fdr-table-scroll">
             <table className="fdr-table">
               <thead>
                 <tr>
                   <th className="fdr-team-header">Team</th>
-                  {GW_INDEXES.map(i => (
-                    <th key={i}>GW{i + 1}</th>
+                  {gwNumbers.map(gw => (
+                    <th key={gw}>GW{gw}</th>
                   ))}
                 </tr>
               </thead>
@@ -152,10 +204,10 @@ export default function App() {
                         <span className="team-code">{team.code}</span>
                       </span>
                     </td>
-                    {FIXTURES[team.code].map((fixture, i) => {
-                      const { opp, venue, style } = getFixtureInfo(fixture, ratings);
+                    {gwNumbers.map(gw => {
+                      const { opp, venue, style } = getFixtureInfo(FIXTURES[team.code][gw - 1], ratings);
                       return (
-                        <td key={i} className="fdr-cell" style={{ background: style.bg, color: style.text }}>
+                        <td key={gw} className="fdr-cell" style={{ background: style.bg, color: style.text }}>
                           {opp} <span className="fdr-venue">({venue})</span>
                         </td>
                       );
@@ -175,6 +227,18 @@ export default function App() {
           </div>
         </section>
       </main>
+
+      <footer className="app-footer">
+        <a
+          href="https://x.com/fpl_proleague"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="footer-link"
+        >
+          <img src="/x-logo.png" alt="" className="x-logo" />
+          Made by @fpl_proleague
+        </a>
+      </footer>
     </div>
   );
 }
