@@ -60,7 +60,7 @@ export const GW_INDEXES = Array.from({ length: GW_COUNT }, (_, i) => i);
 
 // The gameweek in progress right now — GW1 has been played, so GW2 is next up. Update this by hand
 // once a gameweek's fixtures are done; it sets the table's default range (see App.jsx).
-export const CURRENT_GW = 2;
+export const CURRENT_GW = 3;
 
 // Green (easy) through red (hard), same 1-5 scale as the strength rating itself.
 export const RATING_STYLE = {
