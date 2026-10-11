@@ -30,37 +30,91 @@ export const DEFAULT_RATINGS = {
   SCP: 1, ELV: 1,
 };
 
+// Full 2026-27 season, GW1-34. Each row is split at the halfway mark: GW1-17 on the first line,
+// GW18-34 (the mirrored second half, venues flipped) on the second. GW6-34 come from the official
+// Bundesliga fixture list; GW1-5 were entered by hand earlier and are consistent with it (every team
+// plays every other team once home and once away).
 export const FIXTURES = {
-  FCB: ['VFB-H', 'S04-A', 'ELV-A', 'FCU-H', 'FCA-A', 'RBL-H', 'SCF-A', 'BVB-A'],
-  VFB: ['FCB-A', 'KOE-H', 'TSG-A', 'BVB-H', 'SCP-A', 'HSV-A', 'BMG-H', 'B04-A'],
-  RBL: ['BMG-H', 'SVW-A', 'HSV-H', 'B04-A', 'SGE-H', 'FCB-A', 'ELV-H', 'S04-A'],
-  BMG: ['RBL-A', 'ELV-H', 'SCF-A', 'M05-H', 'KOE-A', 'TSG-H', 'VFB-A', 'SCP-H'],
-  M05: ['SCP-H', 'HSV-A', 'SGE-H', 'BMG-A', 'B04-H', 'S04-A', 'SVW-H', 'ELV-A'],
-  SCP: ['M05-A', 'SCF-H', 'BVB-A', 'TSG-H', 'VFB-H', 'SVW-A', 'HSV-H', 'BMG-A'],
-  KOE: ['TSG-H', 'VFB-A', 'SVW-H', 'HSV-A', 'BMG-H', 'SGE-A', 'S04-H', 'FCU-A'],
-  TSG: ['KOE-A', 'BVB-H', 'VFB-H', 'SCP-A', 'HSV-H', 'BMG-A', 'B04-H', 'SVW-A'],
-  FCU: ['SGE-H', 'B04-A', 'S04-H', 'FCB-A', 'ELV-H', 'BVB-H', 'FCA-A', 'KOE-H'],
-  // RBL's GW5 entry says "Frankfurt (A)" — SGE's own GW5 entry also said away, which can't both be
-  // true. Resolved here in RBL's favour of home, so SGE is away.
-  SGE: ['FCU-A', 'FCA-H', 'M05-A', 'SCF-H', 'RBL-A', 'KOE-H', 'BVB-A', 'HSV-H'],
-  ELV: ['B04-H', 'BMG-A', 'FCB-H', 'S04-A', 'FCU-A', 'FCA-H', 'RBL-A', 'M05-H'],
-  B04: ['ELV-A', 'FCU-H', 'FCA-A', 'RBL-H', 'M05-A', 'SCF-H', 'TSG-A', 'VFB-H'],
-  BVB: ['HSV-H', 'TSG-A', 'SCP-H', 'VFB-A', 'SVW-H', 'FCU-A', 'SGE-H', 'FCB-H'],
-  HSV: ['BVB-A', 'M05-H', 'RBL-A', 'KOE-H', 'TSG-A', 'VFB-H', 'SCP-A', 'SGE-A'],
-  // Same conflict as SGE's GW5 above, but for GW7: FCB's own entry says "Freiburg (A)", so SCF is
-  // resolved to home here to match.
-  SCF: ['SVW-H', 'SCP-A', 'BMG-H', 'SGE-A', 'S04-H', 'B04-A', 'FCB-H', 'FCA-A'],
-  SVW: ['SCF-A', 'RBL-H', 'KOE-A', 'FCA-H', 'BVB-A', 'SCP-H', 'M05-A', 'TSG-H'],
-  FCA: ['S04-H', 'SGE-A', 'B04-H', 'SVW-A', 'FCB-H', 'ELV-A', 'FCU-H', 'SCF-H'],
-  S04: ['FCA-A', 'FCB-H', 'FCU-A', 'ELV-H', 'SCF-A', 'M05-H', 'KOE-A', 'RBL-H'],
+  FCB: [
+    'VFB-H', 'S04-A', 'ELV-A', 'FCU-H', 'FCA-A', 'RBL-H', 'SCF-A', 'BVB-H', 'M05-A', 'KOE-H', 'HSV-A', 'SCP-H', 'TSG-A', 'SVW-H', 'BMG-A', 'B04-H', 'SGE-A',
+    'VFB-A', 'S04-H', 'ELV-H', 'FCU-A', 'FCA-H', 'RBL-A', 'SCF-H', 'BVB-A', 'M05-H', 'KOE-A', 'HSV-H', 'SCP-A', 'TSG-H', 'SVW-A', 'BMG-H', 'B04-A', 'SGE-H',
+  ],
+  VFB: [
+    'FCB-A', 'KOE-H', 'TSG-A', 'BVB-H', 'SCP-A', 'HSV-A', 'BMG-H', 'B04-A', 'SVW-H', 'S04-A', 'SGE-H', 'ELV-A', 'FCU-H', 'SCF-A', 'FCA-H', 'RBL-A', 'M05-H',
+    'FCB-H', 'KOE-A', 'TSG-H', 'BVB-A', 'SCP-H', 'HSV-H', 'BMG-A', 'B04-H', 'SVW-A', 'S04-H', 'SGE-A', 'ELV-H', 'FCU-A', 'SCF-H', 'FCA-A', 'RBL-H', 'M05-A',
+  ],
+  RBL: [
+    'BMG-H', 'SVW-A', 'HSV-H', 'B04-A', 'SGE-H', 'FCB-A', 'ELV-H', 'S04-A', 'FCA-H', 'FCU-A', 'SCF-A', 'M05-H', 'KOE-A', 'BVB-H', 'SCP-A', 'VFB-H', 'TSG-A',
+    'BMG-A', 'SVW-H', 'HSV-A', 'B04-H', 'SGE-A', 'FCB-H', 'ELV-A', 'S04-H', 'FCA-A', 'FCU-H', 'SCF-H', 'M05-A', 'KOE-H', 'BVB-A', 'SCP-H', 'VFB-A', 'TSG-H',
+  ],
+  BMG: [
+    'RBL-A', 'ELV-H', 'SCF-A', 'M05-H', 'KOE-A', 'TSG-H', 'VFB-A', 'SCP-H', 'HSV-A', 'BVB-H', 'SVW-A', 'B04-A', 'SGE-H', 'S04-A', 'FCB-H', 'FCA-A', 'FCU-H',
+    'RBL-H', 'ELV-A', 'SCF-H', 'M05-A', 'KOE-H', 'TSG-A', 'VFB-H', 'SCP-A', 'HSV-H', 'BVB-A', 'SVW-H', 'B04-H', 'SGE-A', 'S04-H', 'FCB-A', 'FCA-H', 'FCU-A',
+  ],
+  M05: [
+    'SCP-H', 'HSV-A', 'SGE-H', 'BMG-A', 'B04-H', 'S04-A', 'SVW-H', 'ELV-A', 'FCB-H', 'FCA-A', 'FCU-H', 'RBL-A', 'SCF-H', 'KOE-H', 'BVB-A', 'TSG-H', 'VFB-A',
+    'SCP-A', 'HSV-H', 'SGE-A', 'BMG-H', 'B04-A', 'S04-H', 'SVW-A', 'ELV-H', 'FCB-A', 'FCA-H', 'FCU-A', 'RBL-H', 'SCF-A', 'KOE-A', 'BVB-H', 'TSG-A', 'VFB-H',
+  ],
+  SCP: [
+    'M05-A', 'SCF-H', 'BVB-A', 'TSG-H', 'VFB-H', 'SVW-A', 'HSV-H', 'BMG-A', 'SGE-H', 'B04-A', 'S04-H', 'FCB-A', 'ELV-H', 'FCA-A', 'RBL-H', 'FCU-A', 'KOE-H',
+    'M05-H', 'SCF-A', 'BVB-H', 'TSG-A', 'VFB-A', 'SVW-H', 'HSV-A', 'BMG-H', 'SGE-A', 'B04-H', 'S04-A', 'FCB-H', 'ELV-A', 'FCA-H', 'RBL-A', 'FCU-H', 'KOE-A',
+  ],
+  KOE: [
+    'TSG-H', 'VFB-A', 'SVW-H', 'HSV-A', 'BMG-H', 'SGE-A', 'S04-H', 'FCU-A', 'B04-H', 'FCB-A', 'ELV-H', 'FCA-A', 'RBL-H', 'M05-A', 'SCF-H', 'BVB-H', 'SCP-A',
+    'TSG-A', 'VFB-H', 'SVW-A', 'HSV-H', 'BMG-A', 'SGE-H', 'S04-A', 'FCU-H', 'B04-A', 'FCB-H', 'ELV-A', 'FCA-H', 'RBL-A', 'M05-H', 'SCF-A', 'BVB-A', 'SCP-H',
+  ],
+  TSG: [
+    'KOE-A', 'BVB-H', 'VFB-H', 'SCP-A', 'HSV-H', 'BMG-A', 'B04-H', 'SVW-A', 'S04-H', 'SGE-A', 'FCA-H', 'SCF-A', 'FCB-H', 'FCU-A', 'ELV-H', 'M05-A', 'RBL-H',
+    'KOE-H', 'BVB-A', 'VFB-A', 'SCP-H', 'HSV-A', 'BMG-H', 'B04-A', 'SVW-H', 'S04-A', 'SGE-H', 'FCA-A', 'SCF-H', 'FCB-A', 'FCU-H', 'ELV-A', 'M05-H', 'RBL-A',
+  ],
+  FCU: [
+    'SGE-H', 'B04-A', 'S04-H', 'FCB-A', 'ELV-H', 'BVB-H', 'FCA-A', 'KOE-H', 'SCF-A', 'RBL-H', 'M05-A', 'HSV-H', 'VFB-A', 'TSG-H', 'SVW-A', 'SCP-H', 'BMG-A',
+    'SGE-A', 'B04-H', 'S04-A', 'FCB-H', 'ELV-A', 'BVB-A', 'FCA-H', 'KOE-A', 'SCF-H', 'RBL-A', 'M05-H', 'HSV-A', 'VFB-H', 'TSG-A', 'SVW-H', 'SCP-A', 'BMG-H',
+  ],
+  SGE: [
+    'FCU-A', 'FCA-H', 'M05-A', 'SCF-H', 'RBL-A', 'KOE-H', 'BVB-A', 'HSV-H', 'SCP-A', 'TSG-H', 'VFB-A', 'SVW-H', 'BMG-A', 'B04-A', 'S04-H', 'ELV-A', 'FCB-H',
+    'FCU-H', 'FCA-A', 'M05-H', 'SCF-A', 'RBL-H', 'KOE-A', 'BVB-H', 'HSV-A', 'SCP-H', 'TSG-A', 'VFB-H', 'SVW-A', 'BMG-H', 'B04-H', 'S04-A', 'ELV-H', 'FCB-A',
+  ],
+  ELV: [
+    'B04-H', 'BMG-A', 'FCB-H', 'S04-A', 'FCU-A', 'FCA-H', 'RBL-A', 'M05-H', 'BVB-A', 'SCF-H', 'KOE-A', 'VFB-H', 'SCP-A', 'HSV-H', 'TSG-A', 'SGE-H', 'SVW-A',
+    'B04-A', 'BMG-H', 'FCB-A', 'S04-H', 'FCU-H', 'FCA-A', 'RBL-H', 'M05-A', 'BVB-H', 'SCF-A', 'KOE-H', 'VFB-A', 'SCP-H', 'HSV-A', 'TSG-H', 'SGE-A', 'SVW-H',
+  ],
+  B04: [
+    'ELV-A', 'FCU-H', 'FCA-A', 'RBL-H', 'M05-A', 'SCF-H', 'TSG-A', 'VFB-H', 'KOE-A', 'SCP-H', 'BVB-A', 'BMG-H', 'SVW-A', 'SGE-H', 'HSV-A', 'FCB-A', 'S04-H',
+    'ELV-H', 'FCU-A', 'FCA-H', 'RBL-A', 'M05-H', 'SCF-A', 'TSG-H', 'VFB-A', 'KOE-H', 'SCP-A', 'BVB-H', 'BMG-A', 'SVW-H', 'SGE-A', 'HSV-H', 'FCB-H', 'S04-A',
+  ],
+  BVB: [
+    'HSV-H', 'TSG-A', 'SCP-H', 'VFB-A', 'SVW-H', 'FCU-A', 'SGE-H', 'FCB-A', 'ELV-H', 'BMG-A', 'B04-H', 'S04-A', 'FCA-H', 'RBL-A', 'M05-H', 'KOE-A', 'SCF-H',
+    'HSV-A', 'TSG-H', 'SCP-A', 'VFB-H', 'SVW-A', 'FCU-H', 'SGE-A', 'FCB-H', 'ELV-A', 'BMG-H', 'B04-A', 'S04-H', 'FCA-A', 'RBL-H', 'M05-A', 'KOE-H', 'SCF-A',
+  ],
+  HSV: [
+    'BVB-A', 'M05-H', 'RBL-A', 'KOE-H', 'TSG-A', 'VFB-H', 'SCP-A', 'SGE-A', 'BMG-H', 'SVW-A', 'FCB-H', 'FCU-A', 'S04-H', 'ELV-A', 'B04-H', 'SCF-A', 'FCA-H',
+    'BVB-H', 'M05-A', 'RBL-H', 'KOE-A', 'TSG-H', 'VFB-A', 'SCP-H', 'SGE-H', 'BMG-A', 'SVW-H', 'FCB-A', 'FCU-H', 'S04-A', 'ELV-H', 'B04-A', 'SCF-H', 'FCA-A',
+  ],
+  SCF: [
+    'SVW-H', 'SCP-A', 'BMG-H', 'SGE-A', 'S04-H', 'B04-A', 'FCB-H', 'FCA-A', 'FCU-H', 'ELV-A', 'RBL-H', 'TSG-H', 'M05-A', 'VFB-H', 'KOE-A', 'HSV-H', 'BVB-A',
+    'SVW-A', 'SCP-H', 'BMG-A', 'SGE-H', 'S04-A', 'B04-H', 'FCB-A', 'FCA-H', 'FCU-A', 'ELV-H', 'RBL-A', 'TSG-A', 'M05-H', 'VFB-A', 'KOE-H', 'HSV-A', 'BVB-H',
+  ],
+  SVW: [
+    'SCF-A', 'RBL-H', 'KOE-A', 'FCA-H', 'BVB-A', 'SCP-H', 'M05-A', 'TSG-H', 'VFB-A', 'HSV-H', 'BMG-H', 'SGE-A', 'B04-H', 'FCB-A', 'FCU-H', 'S04-A', 'ELV-H',
+    'SCF-H', 'RBL-A', 'KOE-H', 'FCA-A', 'BVB-H', 'SCP-A', 'M05-H', 'TSG-A', 'VFB-H', 'HSV-A', 'BMG-A', 'SGE-H', 'B04-A', 'FCB-H', 'FCU-A', 'S04-H', 'ELV-A',
+  ],
+  FCA: [
+    'S04-H', 'SGE-A', 'B04-H', 'SVW-A', 'FCB-H', 'ELV-A', 'FCU-H', 'SCF-H', 'RBL-A', 'M05-H', 'TSG-A', 'KOE-H', 'BVB-A', 'SCP-H', 'VFB-A', 'BMG-H', 'HSV-A',
+    'S04-A', 'SGE-H', 'B04-A', 'SVW-H', 'FCB-A', 'ELV-H', 'FCU-A', 'SCF-A', 'RBL-H', 'M05-A', 'TSG-H', 'KOE-A', 'BVB-H', 'SCP-A', 'VFB-H', 'BMG-A', 'HSV-H',
+  ],
+  S04: [
+    'FCA-A', 'FCB-H', 'FCU-A', 'ELV-H', 'SCF-A', 'M05-H', 'KOE-A', 'RBL-H', 'TSG-A', 'VFB-H', 'SCP-A', 'BVB-H', 'HSV-A', 'BMG-H', 'SGE-A', 'SVW-H', 'B04-A',
+    'FCA-H', 'FCB-A', 'FCU-H', 'ELV-A', 'SCF-H', 'M05-A', 'KOE-H', 'RBL-A', 'TSG-H', 'VFB-A', 'SCP-H', 'BVB-A', 'HSV-H', 'BMG-A', 'SGE-H', 'SVW-A', 'B04-H',
+  ],
 };
 
-export const GW_COUNT = 8;
+export const GW_COUNT = 34;
 export const GW_INDEXES = Array.from({ length: GW_COUNT }, (_, i) => i);
 
-// The gameweek in progress right now — GW1 has been played, so GW2 is next up. Update this by hand
-// once a gameweek's fixtures are done; it sets the table's default range (see App.jsx).
-export const CURRENT_GW = 3;
+// The next gameweek to be played — GW1-5 are done, so GW6 is up. Update this by hand once a
+// gameweek's fixtures are done; the table's default range runs from here to GW34 (see App.jsx).
+export const CURRENT_GW = 6;
 
 // Green (easy) through red (hard), same 1-5 scale as the strength rating itself.
 export const RATING_STYLE = {
