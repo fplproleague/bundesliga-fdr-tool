@@ -112,9 +112,42 @@ export const FIXTURES = {
 export const GW_COUNT = 34;
 export const GW_INDEXES = Array.from({ length: GW_COUNT }, (_, i) => i);
 
-// The next gameweek to be played — GW1-5 are done, so GW6 is up. Update this by hand once a
-// gameweek's fixtures are done; the table's default range runs from here to GW34 (see App.jsx).
-export const CURRENT_GW = 6;
+// Last day of each gameweek's window (German time), from the official fixture list. GW1-5 were
+// already played when this was added, so they're left out. From GW12 on these are provisional
+// weekend/midweek windows; update them if the DFL moves a round.
+const GW_END_DATES = {
+  6: '2026-10-18', 7: '2026-10-25', 8: '2026-11-01', 9: '2026-11-08', 10: '2026-11-22',
+  11: '2026-11-29', 12: '2026-12-06', 13: '2026-12-13', 14: '2026-12-20', 15: '2027-01-10',
+  16: '2027-01-14', 17: '2027-01-17', 18: '2027-01-24', 19: '2027-01-31', 20: '2027-02-07',
+  21: '2027-02-14', 22: '2027-02-21', 23: '2027-02-28', 24: '2027-03-04', 25: '2027-03-07',
+  26: '2027-03-14', 27: '2027-03-21', 28: '2027-04-04', 29: '2027-04-11', 30: '2027-04-18',
+  31: '2027-04-25', 32: '2027-05-09', 33: '2027-05-16', 34: '2027-05-22',
+};
+
+// Today's date as YYYY-MM-DD in German time, so the switch happens at midnight in Germany no
+// matter where the viewer is.
+function getGermanDate(date = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Berlin',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date);
+  const get = type => parts.find(p => p.type === type).value;
+  return `${get('year')}-${get('month')}-${get('day')}`;
+}
+
+// The gameweek in progress or next up: the first one whose window hasn't ended yet. It moves on
+// the day after a gameweek's last match day, and stays on GW34 once the season is over.
+export function getCurrentGw(today = getGermanDate()) {
+  const gw = Object.keys(GW_END_DATES)
+    .map(Number)
+    .find(n => today <= GW_END_DATES[n]);
+  return gw ?? GW_COUNT;
+}
+
+// Sets the table's default range: from here to GW34 (see App.jsx).
+export const CURRENT_GW = getCurrentGw();
 
 // Green (easy) through red (hard), same 1-5 scale as the strength rating itself.
 export const RATING_STYLE = {
