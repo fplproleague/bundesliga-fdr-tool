@@ -22,6 +22,7 @@ export const TEAMS = [
   { code: 'ELV', name: 'SV Elversberg' },
 ];
 
+// On the 1-5 scale; getDefaultRatings converts them to the others.
 export const DEFAULT_RATINGS = {
   FCB: 5, BVB: 5, RBL: 5, B04: 5,
   VFB: 4, TSG: 4, SGE: 4, SCF: 4,
@@ -149,27 +150,94 @@ export function getCurrentGw(today = getGermanDate()) {
 // Sets the table's default range: from here to GW34 (see App.jsx).
 export const CURRENT_GW = getCurrentGw();
 
-// Green (easy) through red (hard), same 1-5 scale as the strength rating itself.
-export const RATING_STYLE = {
-  1: { bg: '#3F9142', text: '#F2FBF2', label: 'Easiest' },
-  2: { bg: '#8BB84A', text: '#12280A', label: 'Easy' },
-  3: { bg: '#E0B93C', text: '#332400', label: 'Average' },
-  4: { bg: '#DD7C31', text: '#2E1400', label: 'Hard' },
-  5: { bg: '#C8102E', text: '#FFFFFF', label: 'Hardest' },
+// Rating scales the user can switch between. Ratings are stored on the active scale; switching
+// converts them (see convertRatings).
+export const SCALES = {
+  '5': { id: '5', label: '1–5', min: 1, max: 5, step: 1 },
+  '5-half': { id: '5-half', label: '1–5 (0.5 steps)', min: 1, max: 5, step: 0.5 },
+  '10': { id: '10', label: '1–10', min: 1, max: 10, step: 1 },
 };
+
+export const DEFAULT_SCALE_ID = '5';
+
+// DEFAULT_RATINGS above are on this scale.
+const BASE_SCALE = SCALES[DEFAULT_SCALE_ID];
+
+// Clamps a value to the scale and rounds it to the nearest step.
+export function snapToScale(value, scale) {
+  const clamped = Math.min(scale.max, Math.max(scale.min, value));
+  return scale.min + Math.round((clamped - scale.min) / scale.step) * scale.step;
+}
+
+// Maps a rating linearly from one scale to another (bottom to bottom, top to top), then snaps it.
+// Going 1-5 <-> 1-10 or 1-5 (0.5) <-> 1-10 and back gives the original value.
+export function convertRating(value, from, to) {
+  const t = (value - from.min) / (from.max - from.min);
+  return snapToScale(to.min + t * (to.max - to.min), to);
+}
+
+export function convertRatings(ratings, from, to) {
+  return Object.fromEntries(TEAMS.map(t => [t.code, convertRating(ratings[t.code], from, to)]));
+}
+
+export function getDefaultRatings(scale) {
+  return convertRatings(DEFAULT_RATINGS, BASE_SCALE, scale);
+}
+
+// Every value a rating can take on the scale, lowest first.
+export function getScaleSteps(scale) {
+  const count = Math.round((scale.max - scale.min) / scale.step) + 1;
+  return Array.from({ length: count }, (_, i) => scale.min + i * scale.step);
+}
+
+export function formatRating(rating, scale) {
+  return scale.step < 1 ? rating.toFixed(1) : String(rating);
+}
+
+// Green (easy) through red (hard). These are the colors of 1-5 on the whole-step scale; finer scales
+// blend between them, so every step gets its own shade.
+const RATING_COLORS = [
+  { bg: '#3F9142', text: '#F2FBF2' },
+  { bg: '#8BB84A', text: '#12280A' },
+  { bg: '#E0B93C', text: '#332400' },
+  { bg: '#DD7C31', text: '#2E1400' },
+  { bg: '#C8102E', text: '#FFFFFF' },
+];
+
+function mixHex(a, b, f) {
+  const channel = (hex, i) => parseInt(hex.slice(1 + i * 2, 3 + i * 2), 16);
+  return (
+    '#' +
+    [0, 1, 2]
+      .map(i => Math.round(channel(a, i) + (channel(b, i) - channel(a, i)) * f))
+      .map(c => c.toString(16).padStart(2, '0'))
+      .join('')
+  );
+}
+
+export function getRatingStyle(rating, scale) {
+  const t = (rating - scale.min) / (scale.max - scale.min);
+  const pos = t * (RATING_COLORS.length - 1);
+  const i = Math.min(Math.floor(pos), RATING_COLORS.length - 2);
+  return {
+    bg: mixHex(RATING_COLORS[i].bg, RATING_COLORS[i + 1].bg, pos - i),
+    // Text color from the nearest anchor, which keeps enough contrast on the blended background.
+    text: RATING_COLORS[Math.round(pos)].text,
+  };
+}
 
 export function getTeamName(code) {
   return TEAMS.find(t => t.code === code)?.name ?? code;
 }
 
-export function getFixtureInfo(fixture, ratings) {
+export function getFixtureInfo(fixture, ratings, scale) {
   const [opp, venue] = fixture.split('-');
-  const rating = ratings[opp] ?? 3;
-  return { opp, venue, style: RATING_STYLE[rating], rating };
+  const rating = ratings[opp] ?? snapToScale((scale.min + scale.max) / 2, scale);
+  return { opp, venue, style: getRatingStyle(rating, scale), rating };
 }
 
-export function getTeamAvgDifficulty(teamCode, ratings, startGw = 1, endGw = GW_COUNT) {
+export function getTeamAvgDifficulty(teamCode, ratings, scale, startGw = 1, endGw = GW_COUNT) {
   const fixtures = FIXTURES[teamCode].slice(startGw - 1, endGw);
-  const total = fixtures.reduce((sum, f) => sum + getFixtureInfo(f, ratings).rating, 0);
+  const total = fixtures.reduce((sum, f) => sum + getFixtureInfo(f, ratings, scale).rating, 0);
   return total / fixtures.length;
 }

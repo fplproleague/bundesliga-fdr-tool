@@ -313,24 +313,35 @@ body {
 
 .legend {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+  align-items: center;
+  gap: 8px;
   margin-top: 14px;
 }
 
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.legend-end {
   font-size: 11px;
   color: var(--text-muted);
+  flex-shrink: 0;
 }
 
-.legend-swatch {
-  width: 12px;
-  height: 12px;
-  border-radius: 3px;
-  display: inline-block;
+.legend-steps {
+  display: flex;
+  gap: 2px;
+  min-width: 0;
+}
+
+/* Shrinks on narrow screens so even the 10-step scale fits on one line. */
+.legend-step {
+  flex: 0 1 auto;
+  width: 30px;
+  min-width: 14px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
 }
 
 .app-footer {
