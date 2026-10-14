@@ -2,26 +2,50 @@ import { useEffect, useMemo, useState } from 'react';
 import { ArrowUpDown, ChevronDown, RotateCcw, SlidersHorizontal, Table2 } from 'lucide-react';
 import {
   TEAMS,
-  DEFAULT_RATINGS,
   FIXTURES,
-  RATING_STYLE,
   GW_COUNT,
   CURRENT_GW,
+  SCALES,
+  DEFAULT_SCALE_ID,
+  convertRatings,
+  formatRating,
+  getDefaultRatings,
   getFixtureInfo,
+  getRatingStyle,
+  getScaleSteps,
   getTeamAvgDifficulty,
+  snapToScale,
 } from './constants';
 
 const GW_NUMBERS = Array.from({ length: GW_COUNT }, (_, i) => i + 1);
 
 const RATINGS_STORAGE_KEY = 'bundesliga-fdr-ratings';
+const SCALE_STORAGE_KEY = 'bundesliga-fdr-scale';
 
-function loadStoredRatings() {
+function loadStoredScaleId() {
+  try {
+    const id = localStorage.getItem(SCALE_STORAGE_KEY);
+    return id in SCALES ? id : DEFAULT_SCALE_ID;
+  } catch {
+    return DEFAULT_SCALE_ID;
+  }
+}
+
+// Ratings saved before scales existed have no scale stored, so they load as 1-5, which they are.
+function loadStoredRatings(scale) {
+  const defaults = getDefaultRatings(scale);
   try {
     const raw = localStorage.getItem(RATINGS_STORAGE_KEY);
-    if (!raw) return DEFAULT_RATINGS;
-    return { ...DEFAULT_RATINGS, ...JSON.parse(raw) };
+    if (!raw) return defaults;
+    const stored = JSON.parse(raw);
+    return Object.fromEntries(
+      TEAMS.map(({ code }) => {
+        const value = stored[code];
+        return [code, Number.isFinite(value) ? snapToScale(value, scale) : defaults[code]];
+      })
+    );
   } catch {
-    return DEFAULT_RATINGS;
+    return defaults;
   }
 }
 
@@ -53,7 +77,8 @@ function ClubLogo({ code, size = 18 }) {
 }
 
 export default function App() {
-  const [ratings, setRatings] = useState(loadStoredRatings);
+  const [scaleId, setScaleId] = useState(loadStoredScaleId);
+  const [ratings, setRatings] = useState(() => loadStoredRatings(SCALES[scaleId]));
   const [sortEasiest, setSortEasiest] = useState(false);
   const [gwStart, setGwStart] = useState(CURRENT_GW);
   const [gwEnd, setGwEnd] = useState(GW_COUNT);
@@ -78,30 +103,41 @@ export default function App() {
     [gwStart, gwEnd]
   );
 
+  const scale = SCALES[scaleId];
+
   useEffect(() => {
     try {
       localStorage.setItem(RATINGS_STORAGE_KEY, JSON.stringify(ratings));
+      localStorage.setItem(SCALE_STORAGE_KEY, scaleId);
     } catch {
       // Private browsing / storage disabled — ratings just won't persist across reloads.
     }
-  }, [ratings]);
+  }, [ratings, scaleId]);
 
   const updateRating = (code, value) => {
     setRatings(prev => ({ ...prev, [code]: value }));
   };
 
-  const resetRatings = () => setRatings(DEFAULT_RATINGS);
+  // Carries the current ratings over to the new scale instead of resetting them.
+  const changeScale = newId => {
+    setRatings(prev => convertRatings(prev, scale, SCALES[newId]));
+    setScaleId(newId);
+  };
 
-  const isCustom = TEAMS.some(t => ratings[t.code] !== DEFAULT_RATINGS[t.code]);
+  const defaultRatings = useMemo(() => getDefaultRatings(scale), [scale]);
+
+  const resetRatings = () => setRatings(defaultRatings);
+
+  const isCustom = TEAMS.some(t => ratings[t.code] !== defaultRatings[t.code]);
 
   const displayedTeams = useMemo(() => {
     if (!sortEasiest) return TEAMS;
     return [...TEAMS].sort(
       (a, b) =>
-        getTeamAvgDifficulty(a.code, ratings, gwStart, gwEnd) -
-        getTeamAvgDifficulty(b.code, ratings, gwStart, gwEnd)
+        getTeamAvgDifficulty(a.code, ratings, scale, gwStart, gwEnd) -
+        getTeamAvgDifficulty(b.code, ratings, scale, gwStart, gwEnd)
     );
-  }, [sortEasiest, ratings, gwStart, gwEnd]);
+  }, [sortEasiest, ratings, scale, gwStart, gwEnd]);
 
   return (
     <div className="app">
@@ -120,18 +156,33 @@ export default function App() {
           />
           {openSections.strength && (
             <div className="panel-body">
-              {isCustom && (
-                <div className="panel-controls">
+              <div className="panel-controls">
+                <div className="gw-range">
+                  <label htmlFor="scale">Scale</label>
+                  <select
+                    id="scale"
+                    className="gw-select"
+                    value={scaleId}
+                    onChange={e => changeScale(e.target.value)}
+                  >
+                    {Object.values(SCALES).map(s => (
+                      <option key={s.id} value={s.id}>
+                        {s.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {isCustom && (
                   <button type="button" className="reset-btn" onClick={resetRatings}>
                     <RotateCcw size={14} aria-hidden="true" />
                     Reset
                   </button>
-                </div>
-              )}
+                )}
+              </div>
               <div className="strength-grid">
                 {TEAMS.map(team => {
                   const rating = ratings[team.code];
-                  const style = RATING_STYLE[rating];
+                  const style = getRatingStyle(rating, scale);
                   return (
                     <div className="strength-card" key={team.code}>
                       <div className="strength-card-top">
@@ -140,15 +191,15 @@ export default function App() {
                           <span className="team-code">{team.code}</span>
                         </span>
                         <span className="rating-badge" style={{ background: style.bg, color: style.text }}>
-                          {rating}
+                          {formatRating(rating, scale)}
                         </span>
                       </div>
                       <span className="team-name">{team.name}</span>
                       <input
                         type="range"
-                        min={1}
-                        max={5}
-                        step={1}
+                        min={scale.min}
+                        max={scale.max}
+                        step={scale.step}
                         value={rating}
                         onChange={e => updateRating(team.code, Number(e.target.value))}
                         aria-label={`Strength of ${team.name}`}
@@ -230,7 +281,7 @@ export default function App() {
                           </span>
                         </td>
                         {gwNumbers.map(gw => {
-                          const { opp, venue, style } = getFixtureInfo(FIXTURES[team.code][gw - 1], ratings);
+                          const { opp, venue, style } = getFixtureInfo(FIXTURES[team.code][gw - 1], ratings, scale);
                           return (
                             <td key={gw} className="fdr-cell" style={{ background: style.bg, color: style.text }}>
                               {opp} <span className="fdr-venue">({venue})</span>
@@ -243,12 +294,18 @@ export default function App() {
                 </table>
               </div>
               <div className="legend">
-                {[1, 2, 3, 4, 5].map(r => (
-                  <div className="legend-item" key={r}>
-                    <span className="legend-swatch" style={{ background: RATING_STYLE[r].bg }} />
-                    {RATING_STYLE[r].label}
-                  </div>
-                ))}
+                <span className="legend-end">Easiest</span>
+                <div className="legend-steps">
+                  {getScaleSteps(scale).map(r => {
+                    const style = getRatingStyle(r, scale);
+                    return (
+                      <span className="legend-step" key={r} style={{ background: style.bg, color: style.text }}>
+                        {formatRating(r, scale)}
+                      </span>
+                    );
+                  })}
+                </div>
+                <span className="legend-end">Hardest</span>
               </div>
             </div>
           )}
